@@ -1,0 +1,43 @@
+---
+      2 cluster_name: nucoasodtg005
+      3
+      4 fence_azure_arm_username: 6a7e72c5-a21c-4c03-887d-accd817c15eb
+      5 fence_azure_arm_password: xbRK7XP3-XHvo6wvZ6UAUYF.7dka~U.bWB
+      6 fence_azure_arm_resource_group: CZV-G-N-NUCOAS-T-RGP-06
+      7 fence_azure_arm_subscription_id: e36c3be6-c325-4f1b-8c73-3afe998578b8
+      8
+      9 # Oracle clusters are intended to have only one resource group.
+     10
+     11 resource_groups:
+     12   - lb_backend_port: 62503
+     13     vip: 10.51.32.25
+     14     vip_netmask_bits: 23
+     15     vip_fqdn: nucoasodtg005-vip01.corp.constellation.com
+     16     # File systems shares must be created prior or resource will fail.
+     17     nfs_filesystems:
+     18       - device: 10.51.9.132:/nucoasapptest-data-e001
+     19         directory: /DATA
+     20         fstype: nfs
+     21       - device: 10.51.9.132:/nucoasapptest-reco-e001
+     22         directory: /RECO
+     23         fstype: nfs
+     24     oracle:
+     25       user: oracle
+     26       home: /u01/app/oracle/product/19.0.0.0
+     27       tns_admin: /u01/app/oracle/network/admin
+     28       monuser: ocsmon
+     29       monpassword: PCS_Cluster_4f_1NF1Zure
+     30       monprofile: EXCEPTION_PROF
+     31       # Set to false to not enable run-script resource
+     32       run_scripts:
+     33         db_script: true
+     34         gg_script: false
+     35       databases:
+     36         - NUCOASQ1
+
+
+App ID: 6a7e72c5-a21c-4c03-887d-accd817c15eb
+passwd: xbRK7XP3-XHvo6wvZ6UAUYF.7dka~U.bWB
+Tenant: 817ee1ce-6f1d-4c9d-adbe-d99f5c115c71
+Resource Group NAME: CZV-G-N-NUCOAS-T-RGP-06
+Subscription ID:      e36c3be6-c325-4f1b-8c73-3afe998578b8
