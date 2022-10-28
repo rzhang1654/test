@@ -46,3 +46,8 @@ Subscription ID:      e36c3be6-c325-4f1b-8c73-3afe998578b8
 nucoasodtg-005.corp.constellation.com has address 10.51.32.22
 [root@anstwrbud-001 extra_vars]# host nucoasodtg-006
 nucoasodtg-006.corp.constellation.com has address 10.51.32.20
+
+
+10.51.9.132:/nucoasapptest-reco-e001 /RECO nfs rw,hard,rsize=65536,wsize=65536,sec=sys,vers=4.1,tcp 0 0
+10.51.9.132:/nucoasapptest-data-e001 /DATA nfs rw,hard,rsize=65536,wsize=65536,sec=sys,vers=4.1,tcp 0 0
+
