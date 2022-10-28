@@ -1,3 +1,93 @@
+#Implementation Detail
+#Install and start pcsd service - run it on all nodes in the cluster
+#yum install -y pcs resource-agents fence-agents-all
+
+#systemctl start pcsd.service
+
+#systemctl enable pcsd.service
+
+#passwd hacluster (set password to match that of what you put in the form)
+
+#Cluster Configuration - run it on only one node of the cluster
+#Authorize the cluster
+pcs cluster auth nucoasodtg-005.corp.constellation.com nucoasodtg-006.corp.constellation.com -u hacluster -p 00J/Wat3rs
+
+#Setup the cluster
+pcs cluster setup --wait_for_all=0 --name nucoasodtg005 nucoasodtg-005.corp.constellation.com nucoasodtg-006.corp.constellation.com
+
+#Start the cluster
+pcs cluster start --all
+
+#Configure the cluster wide parameters
+pcs property set no-quorum-policy=ignore stonith-enabled=false
+
+pcs resource defaults update resource-stickiness=100
+
+#Enable the cluster
+pcs cluster enable --all
+
+#Stonith Configuration
+#Configure stonith resource
+pcs stonith create rsc_nucoasodtg005-fence fence_azure_arm login="6a7e72c5-a21c-4c03-887d-accd817c15eb" passwd="xbRK7XP3-XHvo6wvZ6UAUYF.7dka~U.bWB" resourceGroup="CZV-G-N-NUCOAS-T-RGP-06" tenantId="817ee1ce-6f1d-4c9d-adbe-d99f5c115c71" subscriptionId="e36c3be6-c325-4f1b-8c73-3afe998578b8" cloud=usgov power_timeout=240 pcmk_reboot_timeout=900 pcmk_monitor_timeout=120 pcmk_monitor_retries=4 pcmk_action_limit=3 op monitor interval=3600 timeout=120s start interval=0s timeout=600s
+
+#Network Configuration
+#Configure load balancer resource
+pcs resource create nucoasodtg005-lb ocf:heartbeat:azure-lb port=62503 --group rg_nucoasodtg005 op monitor interval=60s on-fail=ignore timeout=240s op start interval=0s timeout=240s op stop interval=0s timeout=240s
+
+#Configure virtual IP resource
+pcs resource create nucoasodtg005-vip ocf:heartbeat:IPaddr2 --group=rg_nucoasodtg005 cidr_netmask=23 ip=10.51.32.25 op monitor interval=60s on-fail=ignore timeout=300s op start interval=0s timeout=300s op stop interval=0s timeout=300s
+
+#File System Configuration
+#Configure file system resource for /RECO
+pcs resource create nucoasodtg005-RECO-fs ocf:heartbeat:Filesystem device=10.51.9.132:/nucoasapptest-reco-e001 directory=/RECO fstype=nfs options=rw,relatime,vers=4.1,rsize=1048576,wsize=1048576,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,local_lock=none op monitor interval=20s timeout=160s op start interval=0s timeout=160s op stop interval=0s timeout=160s --group=rg_nucoasodtg005
+
+#Configure file system resource for /DATA
+pcs resource create nucoasodtg005-DATA-fs ocf:heartbeat:Filesystem device=10.51.9.132:/nucoasapptest-data-e001 directory=/DATA fstype=nfs options=rw,relatime,vers=4.1,rsize=1048576,wsize=1048576,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,local_lock=none op monitor interval=20s timeout=160s op start interval=0s timeout=160s op stop interval=0s timeout=160s --group=rg_nucoasodtg005
+
+#Application Configuration
+#Configure Oracle listener resource
+pcs resource create nucoasodtg005-lsnr ocf:heartbeat:oralsnr –-group=rg_nucoasodtg005 sid=NUCOASQ1 user=oracle home=/u01/app/oracle/product/19.0.0.0 listener=LISTENER tns_admin=/u01/app/oracle/network/admin op monitor interval=60s on-fail=ignore timeout=300s op start interval=0s timeout=300s op stop interval=0s timeout=300s
+
+#Configure Oracle instance resource
+pcs resource create nucoasodtg005-db_NUCOASQ1 ocf:heartbeat:oracle --group=rg_nucoasodtg005 sid=NUCOASQ1 home=/u01/app/oracle/product/19.0.0.0 user=oracle monuser=ocsmon monpassword=PCS_Cluster_4f_1NF1Zure monprofile=EXCEPTION_PROF ipcrm=instance shutdown_method=checkpoint/abort op monitor interval=120s on-fail=ignore timeout=900 op start interval=0s timeout=900s op stop interval=0s timeout=900s
+
+#Configure Custom resource
+pcs resource create nucoasodtg005-db_script ocf:heartbeat:run-script script="/root/db_script.sh" startargs="-d /DATA" stopargs="-d /DATA" startandstop="1" op monitor interval=60s on-fail=ignore timeout=900 op start interval=0s timeout=900s op stop interval=0s timeout=900s --group rg_nucoasodtg005
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ---
       2 cluster_name: nucoasodtg005
       3
