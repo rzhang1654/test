@@ -41,3 +41,8 @@ passwd: xbRK7XP3-XHvo6wvZ6UAUYF.7dka~U.bWB
 Tenant: 817ee1ce-6f1d-4c9d-adbe-d99f5c115c71
 Resource Group NAME: CZV-G-N-NUCOAS-T-RGP-06
 Subscription ID:      e36c3be6-c325-4f1b-8c73-3afe998578b8
+
+[root@anstwrbud-001 extra_vars]# host nucoasodtg-005
+nucoasodtg-005.corp.constellation.com has address 10.51.32.22
+[root@anstwrbud-001 extra_vars]# host nucoasodtg-006
+nucoasodtg-006.corp.constellation.com has address 10.51.32.20
